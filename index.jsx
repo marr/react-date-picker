@@ -6,7 +6,7 @@ var moment = require('moment');
 var React      = require('react')
 var DatePicker = require('./src/index')
 
-var VALUE = Date.now()
+var VALUE = moment(VALUE).add(7, 'days');
 var LOCALE = 'en'
 
 var TODAY = {
@@ -33,10 +33,20 @@ var App = React.createClass({
 
     displayName: 'App',
 
+    getInitialState: function() {
+        return {
+            disabled: true
+        };
+    },
+
     onLocaleChange: function(event) {
         LOCALE = event.target.value
-
+        moment.locale(LOCALE)
         this.setState({})
+    },
+
+    onInputClick: function(event) {
+        this.setState({ disabled: false });
     },
 
     render: function(){
@@ -51,21 +61,23 @@ var App = React.createClass({
                 </select>
             </p>
 
-            <DatePicker
+            <input onClick={this.onInputClick} value={moment(VALUE).fromNow(true)} />
+
+            {!this.state.disabled && <DatePicker
               style={{width: 350, height: 300}}
               minDate={moment()}
               weekDayNames={['S','M','T','W','T','F','S']}
               locale   ={LOCALE}
               date    ={VALUE}
               onChange ={this.onChange}
-            />
+            />}
         </div>
     },
 
     onChange: function(value) {
         console.log('selected ', value)
         VALUE = value
-        this.setState({})
+        this.setState({ disabled: true })
     }
 })
 
